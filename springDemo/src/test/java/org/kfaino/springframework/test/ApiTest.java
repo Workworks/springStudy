@@ -192,6 +192,27 @@ public class ApiTest {
         System.out.println("测试结果：" + result);
     }
 
+    /**
+     * InitializingBean 在BeanPostProcessor执行后执行， 即在对象实例化后执行初始化方法
+     * <p>
+     * DisposableBean 在容器关闭时执行
+     * <p>
+     * 使用方法：
+     * 1.对象实现InitializingBean，DisposableBean方法
+     * 2.在xml中添加 init-method，destroy-method 属性
+     */
+    @Test
+    public void test_BeanFactory05() {
+        // 1.初始化 BeanFactory
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.registerShutdownHook();
+
+        // 2. 获取Bean对象调用方法
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+    }
+
 
     /**
      * 字节码提升测试
@@ -265,5 +286,10 @@ public class ApiTest {
         InputStream inputStream = resource.getInputStream();
         String content = IoUtil.readUtf8(inputStream);
         System.out.println(content);
+    }
+
+    @Test
+    public void test_hook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("close！")));
     }
 }
