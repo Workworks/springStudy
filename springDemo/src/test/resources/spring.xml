@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean id="userDao" class="org.kfaino.springframework.bean.UserDao"/>
+    <bean id="userDao" class="org.kfaino.springframework.test.bean.UserDao"/>
 
-    <bean id="userService" class="org.kfaino.springframework.bean.UserService">
+    <bean id="userService" class="org.kfaino.springframework.test.bean.UserService">
         <property name="uId" value="10002"/>
         <property name="userDao" ref="userDao"/>
     </bean>

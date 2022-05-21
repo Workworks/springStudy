@@ -5,16 +5,19 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.junit.Before;
 import org.junit.Test;
-import org.kfaino.springframework.bean.UserDao;
-import org.kfaino.springframework.bean.UserService;
 import org.kfaino.springframework.beans.PropertyValue;
 import org.kfaino.springframework.beans.PropertyValues;
 import org.kfaino.springframework.beans.factory.config.BeanDefinition;
 import org.kfaino.springframework.beans.factory.config.BeanReference;
 import org.kfaino.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.kfaino.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.kfaino.springframework.context.support.ClassPathXmlApplicationContext;
 import org.kfaino.springframework.core.io.DefaultResourceLoader;
 import org.kfaino.springframework.core.io.Resource;
+import org.kfaino.springframework.test.bean.UserDao;
+import org.kfaino.springframework.test.bean.UserService;
+import org.kfaino.springframework.test.common.MyBeanFactoryPostProcessor;
+import org.kfaino.springframework.test.common.MyBeanPostProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,8 +144,50 @@ public class ApiTest {
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
         reader.loadBeanDefinitions("classpath:spring.xml");
 
+        // 第六版新增
+        // 3. BeanDefinition 加载完成 & Bean实例化之前，修改 BeanDefinition 的属性值
+        MyBeanFactoryPostProcessor beanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
+        beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+
+        // 第六版新增
+        // 4. Bean实例化之后，修改 Bean 属性信息
+        MyBeanPostProcessor beanPostProcessor = new MyBeanPostProcessor();
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
+
         // 3. 获取Bean对象调用方法
         UserService userService = beanFactory.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+    }
+
+    /**
+     * 需要明确:
+     * 1.应用上下文的目的是为了整合 test_BeanFactory03的 1,2步骤
+     * 2.应用上下文会继承 DefaultResourceLoader
+     * 3.应用上下文模板方法 refresh() 为核心方法
+     * <p>
+     * ClassPathXmlApplicationContext 类路径XML应用上下文
+     * 1. 有参构造初始化
+     * <p>
+     * AbstractApplicationContext 抽象应用上下文
+     * 1. refresh() 方法继承 ConfigurableApplicationContext
+     * 做什么事?
+     * - 创建BeanFactory DefaultListableBeanFactory
+     * - XmlBeanDefinitionReader(BeanDefinitionRegistry, DefaultResourceLoader)
+     * - 通过定位信息 location 信息解析 xml , 生成BeanDefinition 此时依然还有循环依赖问题
+     * - 通过创建的 DefaultListableBeanFactory 执行后置处理 BeanFactoryPostProcessor 用户需要显示实现预留 BeanFactoryPostProcessor 接口调用 postProcessBeanFactory 把该类注册进容器.
+     * <p>
+     * BeanFactoryPostProcessor 和 BeanPostProcessor 有什么区别?
+     * - BeanFactoryPostProcessor 是在容器实例化Bean之前操作
+     * - BeanPostProcessor 是在容器实例化Bean之后 ,执行初始化方法之前
+     * - BeanFactoryPostProcessor:针对BeanDefinition创建过程进行干预 BeanPostProcessor:针对bean的实例化过程进行干预
+     */
+    @Test
+    public void test_BeanFactory04() {
+        // 1.初始化 BeanFactory
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:springPostProcessor.xml");
+        // 2. 获取Bean对象调用方法
+        UserService userService = applicationContext.getBean("userService", UserService.class);
         String result = userService.queryUserInfo();
         System.out.println("测试结果：" + result);
     }

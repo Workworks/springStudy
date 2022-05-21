@@ -4,6 +4,7 @@ package org.kfaino.springframework.beans.factory;
 import org.kfaino.springframework.beans.BeansException;
 import org.kfaino.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.kfaino.springframework.beans.factory.config.BeanDefinition;
+import org.kfaino.springframework.beans.factory.config.BeanPostProcessor;
 import org.kfaino.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 /**
@@ -15,4 +16,7 @@ public interface ConfigurableListableBeanFactory extends ListableBeanFactory, Au
 
     BeanDefinition getBeanDefinition(String beanName) throws BeansException;
 
+    void preInstantiateSingletons() throws BeansException;
+
+    void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="userDao" class="org.kfaino.springframework.test.bean.UserDao"/>
+
+    <bean id="userService" class="org.kfaino.springframework.test.bean.UserService">
+        <property name="uId" value="10001"/>
+        <property name="company" value="阿里巴巴"/>
+        <property name="location" value="杭州"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean class="org.kfaino.springframework.test.common.MyBeanPostProcessor"/>
+    <bean class="org.kfaino.springframework.test.common.MyBeanFactoryPostProcessor"/>
+
+</beans>
