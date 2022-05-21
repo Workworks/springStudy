@@ -37,7 +37,7 @@ public class ApiTest {
     @Test
     public void test_BeanFactory01() {
         // 1.初始化 BeanFactory
-        // BeanFactory beanFactory1 = new BeanFactory();
+        // BeanFactory beanFactory = new BeanFactory();
 
         /**
          * AbstractBeanFactory 抽象Bean工厂, 模板方法模式 (继承默认单例Registry)
@@ -211,6 +211,34 @@ public class ApiTest {
         UserService userService = applicationContext.getBean("userService", UserService.class);
         String result = userService.queryUserInfo();
         System.out.println("测试结果：" + result);
+    }
+
+
+    /**
+     * 添加能够感知容器内置对象的能力
+     * Aware
+     * |- BeanClassLoaderAware 获取类加载器  AbstractBeanFactory
+     * |- BeanFactoryAware 获取Bean工厂
+     * |- BeanNameAware 获取Bean名称
+     * <p>
+     * 使用方式:
+     * 在想要获取这些内置对象的类实现Aware其中一个实现类即可
+     * <p>
+     * 值得注意的时 ApplicationContextAware 上下文的注入不在BeanFactory中, 所以需要注册BeanPostProcessor来获取
+     */
+    @Test
+    public void test_BeanFactory06() {
+        // 1.初始化 BeanFactory
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.registerShutdownHook();
+
+        // 2. 获取Bean对象调用方法
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+
+        System.out.println("ApplicationContextAware：" + userService.getApplicationContext());
+        System.out.println("BeanFactoryAware：" + userService.getBeanFactory());
     }
 
 

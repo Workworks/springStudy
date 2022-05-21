@@ -1,9 +1,23 @@
 package org.kfaino.springframework.test.bean;
 
-import org.kfaino.springframework.beans.factory.DisposableBean;
-import org.kfaino.springframework.beans.factory.InitializingBean;
+import org.kfaino.springframework.beans.BeansException;
+import org.kfaino.springframework.beans.factory.*;
+import org.kfaino.springframework.context.ApplicationContext;
+import org.kfaino.springframework.context.ApplicationContextAware;
 
-public class UserService implements InitializingBean, DisposableBean {
+public class UserService implements InitializingBean, DisposableBean, BeanNameAware, BeanClassLoaderAware, ApplicationContextAware, BeanFactoryAware {
+
+    private ApplicationContext applicationContext;
+    private BeanFactory beanFactory;
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public BeanFactory getBeanFactory() {
+        return beanFactory;
+    }
+
 
     private String uId;
     private String company;
@@ -54,5 +68,25 @@ public class UserService implements InitializingBean, DisposableBean {
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("Bean Name is：" + name);
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        System.out.println("ClassLoader：" + classLoader);
     }
 }
