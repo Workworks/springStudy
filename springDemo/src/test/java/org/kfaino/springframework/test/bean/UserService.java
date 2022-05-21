@@ -22,16 +22,17 @@ public class UserService implements InitializingBean, DisposableBean, BeanNameAw
     private String uId;
     private String company;
     private String location;
-    private UserDao userDao;
+    //    private UserDao userDao;
+    private IUserDao userDao;
 
     @Override
     public void destroy() throws Exception {
-        System.out.println("执行：UserService.destroy");
+        System.out.println("DisposableBean: 执行UserService.destroy");
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        System.out.println("执行：UserService.afterPropertiesSet");
+        System.out.println("InitializingBean: 执行UserService.afterPropertiesSet");
     }
 
     public String queryUserInfo() {
@@ -62,11 +63,17 @@ public class UserService implements InitializingBean, DisposableBean, BeanNameAw
         this.location = location;
     }
 
-    public UserDao getUserDao() {
+    public IUserDao getUserDao() {
         return userDao;
     }
+//    public UserDao getUserDao() {
+//        return userDao;
+//    }
 
-    public void setUserDao(UserDao userDao) {
+    //    public void setUserDao(UserDao userDao) {
+//        this.userDao = userDao;
+//    }
+    public void setUserDao(IUserDao userDao) {
         this.userDao = userDao;
     }
 
@@ -77,16 +84,17 @@ public class UserService implements InitializingBean, DisposableBean, BeanNameAw
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println("Aware:" + applicationContext.toString());
         this.applicationContext = applicationContext;
     }
 
     @Override
     public void setBeanName(String name) {
-        System.out.println("Bean Name is：" + name);
+        System.out.println("Aware Bean Name is：" + name);
     }
 
     @Override
     public void setBeanClassLoader(ClassLoader classLoader) {
-        System.out.println("ClassLoader：" + classLoader);
+        System.out.println("Aware ClassLoader：" + classLoader);
     }
 }
